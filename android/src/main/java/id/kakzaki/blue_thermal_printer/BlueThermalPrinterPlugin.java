@@ -380,14 +380,14 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
    * @param result  result
    * @param message message
    */
-  private void write(Result result, String message) {
+  private void write(Result result, String message, String encoding) {
     if (THREAD == null) {
       result.error("write_error", "not connected", null);
       return;
     }
 
     try {
-      THREAD.write(message.getBytes("GB18030"));
+      THREAD.write(message.getBytes(encoding));
       result.success(true);
     } catch (Exception ex) {
       Log.e(TAG, ex.getMessage(), ex);
@@ -395,7 +395,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
     }
   }
 
-  private void writeBytes(Result result, byte[] message) {
+  private void writeBytes(Result result, byte[] message, String encoding) {
     if (THREAD == null) {
       result.error("write_error", "not connected", null);
       return;
@@ -410,7 +410,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
     }
   }
 
-  private void printCustom(Result result, String message, int size, int align) {
+  private void printCustom(Result result, String message, int size, int align, String encoding) {
     // Print config "mode"
     byte[] cc = new byte[] { 0x1B, 0x21, 0x03 }; // 0- normal size text
     // byte[] cc1 = new byte[]{0x1B,0x21,0x00}; // 0- normal size text
@@ -452,7 +452,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
           THREAD.write(PrinterCommands.ESC_ALIGN_RIGHT);
           break;
       }
-      THREAD.write(message.getBytes("GB18030"));
+      THREAD.write(message.getBytes(encoding));
       THREAD.write(PrinterCommands.FEED_LINE);
       result.success(true);
     } catch (Exception ex) {
@@ -461,7 +461,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
     }
   }
 
-  private void printLeftRight(Result result, String msg1, String msg2, int size) {
+  private void printLeftRight(Result result, String msg1, String msg2, int size, String encoding) {
     byte[] cc = new byte[] { 0x1B, 0x21, 0x03 }; // 0- normal size text
     // byte[] cc1 = new byte[]{0x1B,0x21,0x00}; // 0- normal size text
     byte[] bb = new byte[] { 0x1B, 0x21, 0x08 }; // 1- only bold text
@@ -488,7 +488,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
       }
       THREAD.write(PrinterCommands.ESC_ALIGN_CENTER);
       String line = String.format("%-15s %15s %n", msg1, msg2);
-      THREAD.write(line.getBytes("GB18030"));
+      THREAD.write(line.getBytes(encoding));
       result.success(true);
     } catch (Exception ex) {
       Log.e(TAG, ex.getMessage(), ex);

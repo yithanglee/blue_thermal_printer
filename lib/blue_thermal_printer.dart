@@ -67,14 +67,14 @@ class BlueThermalPrinter {
 
   Future<dynamic> disconnect() => _channel.invokeMethod('disconnect');
 
-  Future<dynamic> write(String message) =>
-      _channel.invokeMethod('write', {'message': message});
+  Future<dynamic> write(String message, String encoding) =>
+      _channel.invokeMethod('write', {'message': message, 'encoding': encoding});
 
-  Future<dynamic> writeBytes(Uint8List message) =>
-      _channel.invokeMethod('writeBytes', {'message': message});
+  Future<dynamic> writeBytes(Uint8List message, String encoding) =>
+      _channel.invokeMethod('writeBytes', {'message': message, 'encoding': encoding});
 
-  Future<dynamic> printCustom(String message,int size, int align) =>
-      _channel.invokeMethod('printCustom', {'message': message, 'size': size, 'align': align});
+  Future<dynamic> printCustom(String message,int size, int align, String encoding) =>
+      _channel.invokeMethod('printCustom', {'message': message, 'size': size, 'align': align, 'encoding': encoding});
 
   Future<dynamic> printNewLine() => _channel.invokeMethod('printNewLine');
 
@@ -86,8 +86,8 @@ class BlueThermalPrinter {
   Future<dynamic> printQRcode(String textToQR) =>
       _channel.invokeMethod('printQRcode', {'textToQR': textToQR});
 
-  Future<dynamic> printLeftRight(String string1,String string2,int size) =>
-      _channel.invokeMethod('printLeftRight', {'string1': string1, 'string2': string2,'size': size });
+  Future<dynamic> printLeftRight(String string1,String string2,int size, String encoding) =>
+      _channel.invokeMethod('printLeftRight', {'string1': string1, 'string2': string2,'size': size , 'encoding': encoding});
 }
 
 
