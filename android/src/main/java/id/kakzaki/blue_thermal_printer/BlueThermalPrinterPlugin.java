@@ -197,7 +197,8 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
       case "write":
         if (arguments.containsKey("message")) {
           String message = (String) arguments.get("message");
-          write(result, message);
+             String encoding = (String) arguments.get("encoding");
+          write(result, message, encoding);
         } else {
           result.error("invalid_argument", "argument 'message' not found", null);
         }
@@ -206,7 +207,8 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
       case "writeBytes":
         if (arguments.containsKey("message")) {
           byte[] message = (byte[]) arguments.get("message");
-          writeBytes(result, message);
+               String encoding = (String) arguments.get("encoding");
+          writeBytes(result, message, encoding);
         } else {
           result.error("invalid_argument", "argument 'message' not found", null);
         }
@@ -217,7 +219,8 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
           String message = (String) arguments.get("message");
           int size = (int) arguments.get("size");
           int align = (int) arguments.get("align");
-          printCustom(result, message, size, align);
+             String encoding = (String) arguments.get("encoding");
+          printCustom(result, message, size, align, encoding);
         } else {
           result.error("invalid_argument", "argument 'message' not found", null);
         }
@@ -252,8 +255,9 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
         if (arguments.containsKey("string1")) {
           String string1 = (String) arguments.get("string1");
           String string2 = (String) arguments.get("string2");
-          int size = (int) arguments.get("size");
-          printLeftRight(result, string1, string2, size);
+          int size = (int) arguments.get("size"); 
+             String encoding = (String) arguments.get("encoding");
+          printLeftRight(result, string1, string2, size, encoding);
         } else {
           result.error("invalid_argument", "argument 'message' not found", null);
         }
@@ -412,6 +416,8 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
 
   private void printCustom(Result result, String message, int size, int align, String encoding) {
     // Print config "mode"
+  byte[] aa = new byte[] { 0x1C, 0x53, 0x00, 0x00 };
+     
     byte[] cc = new byte[] { 0x1B, 0x21, 0x03 }; // 0- normal size text
     // byte[] cc1 = new byte[]{0x1B,0x21,0x00}; // 0- normal size text
     byte[] bb = new byte[] { 0x1B, 0x21, 0x08 }; // 1- only bold text
@@ -423,6 +429,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
     }
 
     try {
+  
       switch (size) {
         case 0:
           THREAD.write(cc);
@@ -452,6 +459,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
           THREAD.write(PrinterCommands.ESC_ALIGN_RIGHT);
           break;
       }
+         THREAD.write(aa);
       THREAD.write(message.getBytes(encoding));
       THREAD.write(PrinterCommands.FEED_LINE);
       result.success(true);
@@ -462,6 +470,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
   }
 
   private void printLeftRight(Result result, String msg1, String msg2, int size, String encoding) {
+
     byte[] cc = new byte[] { 0x1B, 0x21, 0x03 }; // 0- normal size text
     // byte[] cc1 = new byte[]{0x1B,0x21,0x00}; // 0- normal size text
     byte[] bb = new byte[] { 0x1B, 0x21, 0x08 }; // 1- only bold text
@@ -471,6 +480,7 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
       result.error("write_error", "not connected", null);
       return;
     }
+
     try {
       switch (size) {
         case 0:
@@ -486,8 +496,8 @@ public class BlueThermalPrinterPlugin implements MethodCallHandler, RequestPermi
           THREAD.write(bb3);
           break;
       }
-      THREAD.write(PrinterCommands.ESC_ALIGN_CENTER);
-      String line = String.format("%-15s %15s %n", msg1, msg2);
+      THREAD.write(PrinterCommands.ESC_ALIGN_LEFT);
+      String line = String.format("%-20s %20s %n", msg1, msg2);
       THREAD.write(line.getBytes(encoding));
       result.success(true);
     } catch (Exception ex) {
